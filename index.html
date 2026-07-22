@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GIGS // PORTFOLIO.EXE</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="scanlines" aria-hidden="true"></div>
+<div id="pixelCursor" class="pixel-cursor" aria-hidden="true"></div>
+
+<!-- ============ TITLEBAR / NAV ============ -->
+<header class="titlebar">
+  <div class="titlebar-left">
+    <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+    <span class="titlebar-name">GIGS.EXE</span>
+  </div>
+  <nav class="titlebar-nav">
+    <a href="#about">ABOUT</a>
+    <a href="#projects">PROJECTS</a>
+    <a href="#contact">CONTACT</a>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ============ HERO ============ -->
+  <section id="hero" class="hero">
+    <div class="hero-window window">
+      <div class="window-titlebar">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span class="window-title">boot.log</span>
+      </div>
+      <div class="window-body hero-body">
+        <p class="boot-line" id="bootLine1"></p>
+        <p class="boot-line" id="bootLine2"></p>
+        <p class="prompt-line" id="promptLine">C:\GIGS&gt; whoami</p>
+        <h1 class="hero-name"><span id="typedName"></span><span class="cursor">_</span></h1>
+        <p class="hero-role" id="heroRole">IT STUDENT // WEB DEVELOPER</p>
+        <p class="hero-tagline" id="heroTagline">I build things, break things, then fix them with a workaround nobody asked for.</p>
+        <div class="hero-buttons" id="heroButtons">
+          <a href="#projects" class="btn btn-primary">[ VIEW PROJECTS ]</a>
+          <a href="#contact" class="btn">[ CONTACT ME ]</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ABOUT ============ -->
+  <section id="about" class="section">
+    <h2 class="section-heading reveal-target"><span class="heading-index">01</span> ABOUT.TXT</h2>
+    <div class="window reveal-target">
+      <div class="window-titlebar">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span class="window-title">about.txt — read only</span>
+      </div>
+      <div class="window-body about-body">
+        <p>
+          Hey, I'm <strong>Gigs</strong> — an IT student who spends more time debugging than sleeping.
+          I like finding the fastest working path through a system, whether that's a database query,
+          a CSS bug, or a deploy pipeline. This portfolio is where the finished builds land.
+        </p>
+        <div class="skills">
+          <span class="chip">HTML / CSS / JS</span>
+          <span class="chip">SQL</span>
+          <span class="chip">Supabase</span>
+          <span class="chip">Git / GitHub</span>
+        <!--  <span class="chip">Systems Analysis &amp; Design</span>  --> 
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PROJECTS ============ -->
+  <section id="projects" class="section">
+    <div class="section-heading-row">
+      <h2 class="section-heading reveal-target"><span class="heading-index">02</span> PROJECTS/</h2>
+      <button id="addProjectBtn" class="btn btn-primary">[ + ADD PROJECT ]</button>
+    </div>
+
+    <div id="projectGrid" class="project-grid">
+      <!-- project windows are rendered here by script.js -->
+    </div>
+
+    <div class="data-tools">
+      <button id="exportBtn" class="btn btn-small">EXPORT DATA</button>
+      <label class="btn btn-small file-label">
+        IMPORT DATA
+        <input type="file" id="importInput" accept="application/json" hidden>
+      </label>
+      <span class="hint">Projects are saved in this browser only (localStorage). Export a backup before clearing your browser data.</span>
+    </div>
+  </section>
+
+  <!-- ============ CONTACT ============ -->
+  <section id="contact" class="section">
+    <h2 class="section-heading reveal-target"><span class="heading-index">03</span> CONTACT.TXT</h2>
+    <div class="window reveal-target">
+      <div class="window-titlebar">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span class="window-title">contact.txt</span>
+      </div>
+      <div class="window-body contact-body">
+        <p>Got a project, a bug, or a good excuse to talk shop? Reach out:</p>
+        <ul class="contact-list">
+          <li><span class="label">EMAIL</span> <a href="https://gigsonaquino4@gmail.com" target="_blank" rel="noopener">gigsonaquino4@gmail.com</a></li>
+          <li><span class="label">GITHUB</span> <a href="https://github.com/gigson04" target="_blank" rel="noopener">github.com/gigson04</a></li>
+        <!--  <li><span class="label">LINKEDIN</span> <a href="#" target="_blank" rel="noopener">linkedin.com/in/yourname</a></li>  -->
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>&copy; <span id="year"></span> GIGS.EXE — built with HTML, CSS &amp; vanilla JS. No frameworks were harmed.</p>
+</footer>
+
+<!-- ============ ADD / EDIT PROJECT MODAL ============ -->
+<div id="modalOverlay" class="modal-overlay" hidden>
+  <div class="window modal-window">
+    <div class="window-titlebar">
+      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      <span class="window-title" id="modalTitle">new_project.exe</span>
+      <button id="closeModalBtn" class="window-close" aria-label="Close">X</button>
+    </div>
+    <div class="window-body">
+      <form id="projectForm">
+        <label class="field">
+          <span>TITLE</span>
+          <input type="text" id="fieldTitle" required maxlength="60" placeholder="e.g. TARA, NV!">
+        </label>
+
+        <label class="field">
+          <span>DESCRIPTION</span>
+          <textarea id="fieldDescription" rows="3" maxlength="240" placeholder="What does it do?"></textarea>
+        </label>
+
+        <label class="field">
+          <span>TAGS (comma separated)</span>
+          <input type="text" id="fieldTags" placeholder="e.g. React, Supabase, Capstone">
+        </label>
+
+        <label class="field">
+          <span>PROJECT LINK</span>
+          <input type="url" id="fieldLink" placeholder="https://github.com/you/project">
+        </label>
+
+        <label class="field">
+          <span>SCREENSHOT</span>
+          <input type="file" id="fieldImage" accept="image/*">
+        </label>
+
+        <div class="image-preview-wrap">
+          <img id="imagePreview" class="image-preview" alt="Preview" hidden>
+          <div id="imagePlaceholder" class="pixel-placeholder"></div>
+        </div>
+
+        <input type="hidden" id="fieldId">
+
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-primary">[ SAVE PROJECT ]</button>
+          <button type="button" id="cancelBtn" class="btn">[ CANCEL ]</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
