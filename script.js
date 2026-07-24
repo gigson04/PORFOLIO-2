@@ -10,8 +10,6 @@ document.documentElement.classList.add("js-ready");
 const STORAGE_KEY = "gigsPortfolioProjects";
 
 // ---- Seed data shown the very first time the page loads ----
-// Edit these directly, or delete them from the UI once you've
-// added your own real projects.
 const SEED_PROJECTS = [
   {
     id: "seed-1",
@@ -22,24 +20,7 @@ const SEED_PROJECTS = [
     link: "https://github.com/gigson04",
     image: null,
   },
-  {
-    id: "seed-2",
-    title: "ALKANSYA",
-    description:
-      "A budget tracker with multi-account tracking, savings goals, and Chart.js visualizations, with persistent local storage.",
-    tags: ["JavaScript", "Chart.js"],
-    link: "https://github.com/gigson04",
-    image: null,
-  },
-  {
-    id: "seed-3",
-    title: "EXAM.SYS",
-    description:
-      "An interactive browser-based reviewer and quiz app built for SQL and Systems Analysis & Design finals, with instant answer keys.",
-    tags: ["Web App", "Study Tool"],
-    link: "https://github.com/gigson04",
-    image: null,
-  },
+  
 ];
 
 // ---- DOM references ----
@@ -63,7 +44,7 @@ const imagePlaceholder = document.getElementById("imagePlaceholder");
 const exportBtn = document.getElementById("exportBtn");
 const importInput = document.getElementById("importInput");
 
-let currentImageData = null; // base64 string of the (possibly compressed) screenshot
+let currentImageData = null;
 
 // =========================================================
 // Storage helpers
@@ -319,8 +300,55 @@ projectForm.addEventListener("submit", (e) => {
   renderProjects();
 });
 
-function deleteProject(id) {
-  if (!confirm("Delete this project? This can't be undone.")) return;
+// =========================================================
+// Themed confirm dialog (replaces the native browser confirm())
+// =========================================================
+
+const confirmOverlay = document.getElementById("confirmOverlay");
+const confirmMessage = document.getElementById("confirmMessage");
+const confirmOkBtn = document.getElementById("confirmOkBtn");
+const confirmCancelBtn = document.getElementById("confirmCancelBtn");
+
+function showConfirm(message) {
+  return new Promise((resolve) => {
+    confirmMessage.textContent = message;
+    confirmOverlay.hidden = false;
+    confirmOkBtn.focus();
+
+    function cleanup(result) {
+      confirmOverlay.hidden = true;
+      confirmOkBtn.removeEventListener("click", onOk);
+      confirmCancelBtn.removeEventListener("click", onCancel);
+      confirmOverlay.removeEventListener("click", onOverlayClick);
+      document.removeEventListener("keydown", onKeydown);
+      resolve(result);
+    }
+    function onOk() {
+      cleanup(true);
+    }
+    function onCancel() {
+      cleanup(false);
+    }
+    function onOverlayClick(e) {
+      if (e.target === confirmOverlay) cleanup(false);
+    }
+    function onKeydown(e) {
+      if (e.key === "Escape") cleanup(false);
+      if (e.key === "Enter") cleanup(true);
+    }
+
+    confirmOkBtn.addEventListener("click", onOk);
+    confirmCancelBtn.addEventListener("click", onCancel);
+    confirmOverlay.addEventListener("click", onOverlayClick);
+    document.addEventListener("keydown", onKeydown);
+  });
+}
+
+async function deleteProject(id) {
+  const confirmed = await showConfirm(
+    "Are you sure you want to delete this project? This can't be undone."
+  );
+  if (!confirmed) return;
   const projects = loadProjects().filter((p) => p.id !== id);
   saveProjects(projects);
   renderProjects();
@@ -440,9 +468,6 @@ function getRevealObserver() {
         }
       });
     },
-    // threshold 0 + a bottom rootMargin: fires as soon as even a
-    // sliver is in view, so fast scrolls/scrollbar-drags/jump
-    // links can't skip past an element without triggering it
     { threshold: 0, rootMargin: "0px 0px 120px 0px" }
   );
   return revealObserver;
@@ -464,10 +489,6 @@ function observeRevealTargets(elements) {
     el.dataset.revealDelay = String(Math.min(i * 70, 350));
     observer.observe(el);
 
-    // safety net: if this element somehow never gets flagged as
-    // intersecting (edge cases with instant jumps, oddly-sized
-    // layouts, etc.), reveal it anyway after a short grace period
-    // so nothing is ever stuck permanently invisible.
     setTimeout(() => {
       if (!el.classList.contains("is-visible")) {
         el.classList.add("is-visible");
@@ -479,8 +500,6 @@ function observeRevealTargets(elements) {
 
 // =========================================================
 // Custom pixel cursor + trail
-// Only on devices with a real mouse; native cursor stays
-// everywhere else (touch, reduced motion).
 // =========================================================
 
 function initPixelCursor() {
@@ -494,7 +513,7 @@ function initPixelCursor() {
   document.body.classList.add("pixel-cursor-active");
 
   let lastTrailTime = 0;
-  const trailInterval = 35; // ms between spawned pixels
+  const trailInterval = 35;
   const grayTones = ["#1a1a1a", "#4a4a4a", "#6f6f6f", "#9c9c9c", "#bdbdbd"];
   const activePool = [];
   const maxPoolSize = 40;
@@ -531,7 +550,6 @@ function initPixelCursor() {
       once: true,
     });
 
-    // safety net in case animationend never fires (e.g. tab backgrounded)
     setTimeout(() => removeTrailPixel(pixel), 800);
 
     if (activePool.length > maxPoolSize) {
@@ -545,7 +563,6 @@ function initPixelCursor() {
     if (pixel.parentNode) pixel.parentNode.removeChild(pixel);
   }
 
-  // grow/invert the cursor over anything clickable
   const interactiveSelector = "a, button, input, textarea, label, .chip, .tag";
   document.addEventListener(
     "mouseover",

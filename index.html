@@ -110,7 +110,7 @@
       <div class="window-body contact-body">
         <p>Got a project, a bug, or a good excuse to talk shop? Reach out:</p>
         <ul class="contact-list">
-          <li><span class="label">EMAIL</span> <a href="https://gigsonaquino4@gmail.com" target="_blank" rel="noopener">gigsonaquino4@gmail.com</a></li>
+          <li><span class="label">EMAIL</span> <a href="mailto:gigsonaquino4@gmail.com" target="_blank" rel="noopener">gigsonaquino4@gmail.com</a></li>
           <li><span class="label">GITHUB</span> <a href="https://github.com/gigson04" target="_blank" rel="noopener">github.com/gigson04</a></li>
         <!--  <li><span class="label">LINKEDIN</span> <a href="#" target="_blank" rel="noopener">linkedin.com/in/yourname</a></li>  -->
         </ul>
@@ -171,6 +171,23 @@
           <button type="button" id="cancelBtn" class="btn">[ CANCEL ]</button>
         </div>
       </form>
+    </div>
+  </div>
+</div>
+
+<!-- ============ CONFIRM DIALOG (replaces native browser confirm) ============ -->
+<div id="confirmOverlay" class="modal-overlay" hidden>
+  <div class="window confirm-window">
+    <div class="window-titlebar">
+      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      <span class="window-title">confirm.exe</span>
+    </div>
+    <div class="window-body confirm-body">
+      <p id="confirmMessage">Are you sure?</p>
+      <div class="modal-actions">
+        <button type="button" id="confirmOkBtn" class="btn btn-primary">[ OK ]</button>
+        <button type="button" id="confirmCancelBtn" class="btn">[ CANCEL ]</button>
+      </div>
     </div>
   </div>
 </div>

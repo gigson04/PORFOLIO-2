@@ -755,4 +755,19 @@ body.pixel-cursor-active .pixel-cursor {
   .contact-list .label {
     width: 80px;
   }
+  
+}
+.confirm-window {
+  max-width: 360px;
+  margin-bottom: 0;
+}
+
+.confirm-body p {
+  margin: 0 0 20px;
+  font-size: 20px;
+  color: var(--ink);
+}
+
+.confirm-body .modal-actions {
+  justify-content: flex-end;
 }
