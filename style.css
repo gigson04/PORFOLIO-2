@@ -20,6 +20,23 @@
   --pixel: 4px; /* base pixel unit for stepped shadows/borders */
 }
 
+/* =========================================================
+   DARK MODE — same monochrome system, inverted. Because every
+   color in this file is a variable, toggling one class on <html>
+   re-themes the whole page (borders, box-shadows, dots, etc).
+   Toggled by the 3D lamp / titlebar button — see script.js + lamp.js.
+   ========================================================= */
+html.dark-mode {
+  --white: #161616;
+  --panel: #202020;
+  --panel-alt: #272727;
+  --border: #444444;
+  --gray-soft: #6a6a6a;
+  --gray-mid: #b0b0b0;
+  --ink: #e9e9e9;
+  --black: #f2f2f2;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -36,6 +53,39 @@ body {
   font-size: 20px;
   line-height: 1.5;
   image-rendering: pixelated;
+  transition: background-color 0.35s ease, color 0.35s ease;
+}
+
+/* Smooth crossfade for the pieces that carry hard-coded var(--black)
+   borders/box-shadows so the theme swap doesn't feel like a snap-cut. */
+.window,
+.btn,
+.titlebar,
+.footer,
+.chip,
+.tag,
+.dot,
+.field input,
+.field textarea,
+.window-close {
+  transition: background-color 0.35s ease, color 0.35s ease,
+    border-color 0.35s ease, box-shadow 0.35s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body,
+  .window,
+  .btn,
+  .titlebar,
+  .footer,
+  .chip,
+  .tag,
+  .dot,
+  .field input,
+  .field textarea,
+  .window-close {
+    transition: none;
+  }
 }
 
 img {
@@ -222,6 +272,24 @@ h1, h2 {
 .file-label {
   display: inline-flex;
   align-items: center;
+}
+
+.theme-toggle-btn {
+  font-family: var(--font-display);
+  font-size: 11px;
+  padding: 6px 10px;
+}
+
+.theme-toggle-btn .theme-icon-dark {
+  display: none;
+}
+
+html.dark-mode .theme-toggle-btn .theme-icon-light {
+  display: none;
+}
+
+html.dark-mode .theme-toggle-btn .theme-icon-dark {
+  display: inline;
 }
 
 /* =========================================================
@@ -770,4 +838,118 @@ body.pixel-cursor-active .pixel-cursor {
 
 .confirm-body .modal-actions {
   justify-content: flex-end;
+}
+
+/* =========================================================
+   3D LAMP THEME TOGGLE
+   Hangs fixed at the top-right of the viewport. The canvas is
+   purely decorative (rendered by lamp.js / Three.js); the actual
+   control is #lampKnobHit, a real button-role element positioned
+   over the cord/knob area so it works with mouse, touch, and
+   keyboard even if WebGL never renders anything.
+   ========================================================= */
+
+.lamp-widget {
+  position: fixed;
+  top: 58px;
+  right: 22px;
+  width: 150px;
+  height: 260px;
+  z-index: 150;
+  pointer-events: none;
+}
+
+.lamp-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.lamp-knob-hit {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  width: 64px;
+  height: 58%;
+  transform: translateX(-50%);
+  pointer-events: auto;
+  cursor: grab;
+  touch-action: none;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 6px;
+}
+
+.lamp-knob-hit:active {
+  cursor: grabbing;
+}
+
+.lamp-hint {
+  font-family: var(--font-display);
+  font-size: 9px;
+  color: var(--gray-mid);
+  background: var(--panel);
+  border: 2px solid var(--black);
+  padding: 3px 6px;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  white-space: nowrap;
+}
+
+.lamp-knob-hit:hover .lamp-hint,
+.lamp-knob-hit:focus-visible .lamp-hint {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.lamp-knob-hit:focus-visible {
+  outline: 3px solid var(--gray-mid);
+  outline-offset: 4px;
+}
+
+/* If Three.js/WebGL never renders, the knob hit-zone is still a
+   real, labeled, clickable control — just give it a visible target
+   so it isn't an invisible dead patch of screen. */
+.no-webgl .lamp-hint {
+  opacity: 1;
+  position: static;
+  transform: none;
+}
+
+@media (max-width: 900px) {
+  .lamp-widget {
+    top: 52px;
+    right: 8px;
+    width: 100px;
+    height: 190px;
+  }
+  .lamp-knob-hit {
+    width: 52px;
+  }
+}
+
+@media (max-width: 560px) {
+  .lamp-widget {
+    top: auto;
+    bottom: 18px;
+    right: 10px;
+    width: 78px;
+    height: 140px;
+  }
+  .lamp-knob-hit {
+    width: 44px;
+  }
+  .lamp-hint {
+    font-size: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lamp-hint {
+    transition: none;
+  }
 }

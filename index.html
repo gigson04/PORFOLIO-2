@@ -4,6 +4,28 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GIGS // PORTFOLIO.EXE</title>
+
+<!-- Applies saved/system theme before first paint so there's no light-mode flash -->
+<script>
+(function () {
+  try {
+    var saved = localStorage.getItem("gigsPortfolioTheme");
+    var dark = saved ? saved === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.classList.toggle("dark-mode", dark);
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
+  } catch (e) {}
+})();
+</script>
+
+<!-- Three.js, used only by the 3D lamp toggle (lamp.js). Everything else on
+     the page works fine even if this fails to load. -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+  }
+}
+</script>
   
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,8 +48,31 @@
     <a href="#about">ABOUT</a>
     <a href="#projects">PROJECTS</a>
     <a href="#contact">CONTACT</a>
+    <button id="themeFallbackBtn" class="btn btn-small theme-toggle-btn" type="button" aria-pressed="false" aria-label="Toggle dark mode">
+      <span class="theme-icon-light" aria-hidden="true">☀ LIGHT</span>
+      <span class="theme-icon-dark" aria-hidden="true">☾ DARK</span>
+    </button>
   </nav>
 </header>
+
+<!-- ============ 3D LAMP THEME TOGGLE ============
+     Hanging pendant lamp, fixed to the side of the viewport.
+     Drag the knob down to pull the cord and flip dark/light mode.
+     #lampKnobHit is the actual interactive control (works with
+     mouse, touch, and keyboard) — the canvas itself is decorative. -->
+<div id="lampWidget" class="lamp-widget">
+  <canvas id="lampCanvas" class="lamp-canvas" aria-hidden="true"></canvas>
+  <div
+    id="lampKnobHit"
+    class="lamp-knob-hit"
+    role="button"
+    tabindex="0"
+    aria-pressed="false"
+    aria-label="Pull the cord to toggle dark mode"
+  >
+    <span class="lamp-hint" aria-hidden="true">PULL</span>
+  </div>
+</div>
 
 <main>
 
@@ -193,5 +238,6 @@
 </div>
 
 <script src="script.js"></script>
+<script type="module" src="lamp.js"></script>
 </body>
 </html>

@@ -7,6 +7,67 @@
 // reveal/typing animations, since JS is confirmed running.
 document.documentElement.classList.add("js-ready");
 
+// =========================================================
+// Theme (light / dark mode)
+// The <head> already applied the saved/system theme before first
+// paint (no flash). This wires up persistence + a shared API so
+// both the accessible fallback button AND the 3D lamp (lamp.js)
+// can read/drive the same state. Everything here works even if
+// lamp.js / Three.js never loads.
+// =========================================================
+
+const THEME_KEY = "gigsPortfolioTheme";
+const themeFallbackBtn = document.getElementById("themeFallbackBtn");
+const lampKnobHit = document.getElementById("lampKnobHit");
+
+function isDarkMode() {
+  return document.documentElement.classList.contains("dark-mode");
+}
+
+function applyTheme(dark, persist = true) {
+  document.documentElement.classList.toggle("dark-mode", dark);
+  document.documentElement.dataset.theme = dark ? "dark" : "light";
+  if (persist) localStorage.setItem(THEME_KEY, dark ? "dark" : "light");
+
+  if (themeFallbackBtn) themeFallbackBtn.setAttribute("aria-pressed", String(dark));
+  if (lampKnobHit) lampKnobHit.setAttribute("aria-pressed", String(dark));
+
+  document.dispatchEvent(new CustomEvent("themechange", { detail: { dark } }));
+}
+
+function toggleTheme() {
+  applyTheme(!isDarkMode());
+}
+
+// Sync button/lamp state with whatever the head script already set.
+applyTheme(isDarkMode(), false);
+
+// Shared API so the 3D lamp doesn't need to touch localStorage itself.
+window.PortfolioTheme = {
+  isDark: isDarkMode,
+  setDark: (dark) => applyTheme(dark),
+  toggle: toggleTheme,
+};
+
+if (themeFallbackBtn) {
+  themeFallbackBtn.addEventListener("click", toggleTheme);
+}
+
+// The lamp's knob div is also a real, keyboard-operable button:
+// Enter/Space toggles theme directly (dragging is a mouse/touch bonus
+// handled separately in lamp.js).
+if (lampKnobHit) {
+  lampKnobHit.addEventListener("click", (e) => {
+    // lamp.js marks pointer-drag-driven toggles so this click handler
+    // (which fires after any pointerup) doesn't double-toggle them.
+    if (lampKnobHit.dataset.suppressClick === "1") {
+      lampKnobHit.dataset.suppressClick = "0";
+      return;
+    }
+    toggleTheme();
+  });
+}
+
 const STORAGE_KEY = "gigsPortfolioProjects";
 
 // ---- Seed data shown the very first time the page loads ----
